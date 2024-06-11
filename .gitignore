@@ -4,3 +4,5 @@
 !.gitignore
 !starship.toml
 !lsd
+!sway
+!i3status-rust
