@@ -92,6 +92,15 @@ vim.g.mapleader = '\\'
 vim.g.maplocalleader = '\\'
 vim.keymap.set({ 'i', 'v' }, '<leader>jk', '<Esc>')
 vim.keymap.set('n', '<leader>pv',  vim.cmd.Ex)
+-- pane navigation
+vim.keymap.set('n', '<leader>j', '<C-w>j')
+vim.keymap.set('n', '<leader>h', '<C-w>h')
+vim.keymap.set('n', '<leader>l', '<C-w>l')
+vim.keymap.set('n', '<leader>k', '<C-w>k')
+
+-- pane resize
+vim.keymap.set('n', '<leader>u', '<C-w>>')
+vim.keymap.set('n', '<leader>o', '<C-w><')
 
 vim.opt.ruler = false
 
