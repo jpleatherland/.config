@@ -1,2 +1,2 @@
-bindsym XF86MonBrightnessDown exec brightnessctl set 30-
-bindsym XF86MonBrightnessUp exec brightnessctl set 30+
+bindsym XF86MonBrightnessDown exec light -U 20
+bindsym XF86MonBrightnessUp exec light -A 20

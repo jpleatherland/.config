@@ -22,7 +22,7 @@ set $menu tofi-run | xargs swaymsg exec --
 
 ### Output configuration
 #
-output * bg /usr/share/backgrounds/Snow-Capped\ Mountain.jpg fit
+output * bg /usr/share/backgrounds/paint.jpg fit
 #
 # Example configuration:
 #
@@ -224,3 +224,4 @@ include @sysconfdir@/sway/config.d/*
 include ~/.config/sway/keymap
 include ./aura-theme.conf
 default_border none
+exec /usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1
