@@ -805,7 +805,15 @@ require("lazy").setup({
 			"nvim-treesitter/nvim-treesitter",
 		},
 		config = function()
-			require("go").setup()
+			require("go").setup({
+				lsp_cfg = false,
+				lsp_document_formatting = false,
+				lsp_keymaps = false,
+				lsp_codelens = false,
+				lsp_inlay_hints = {
+					enable = false,
+				},
+			})
 		end,
 		event = { "CmdlineEnter" },
 		ft = { "go", "gomod" },
@@ -834,7 +842,6 @@ require("lazy").setup({
 	--  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
 	--    For additional information, see `:help lazy.nvim-lazy.nvim-structuring-your-plugins`
 	{ import = "custom.plugins" },
-
 }, {
 	ui = {
 		-- If you are using a Nerd Font: set icons to an empty table which will use the

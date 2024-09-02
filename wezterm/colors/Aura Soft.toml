@@ -1,0 +1,38 @@
+[colors]
+ansi = [
+    "#15141b",
+    "#c55858",
+    '#54c59f',
+    '#c7a06f',
+    '#8464c6',
+    '#8464c6',
+    '#54c59f',
+    '#bdbdbd',
+]
+
+background = "#21202e"
+brights = [
+    '#6d6d6d',
+    '#c55858',
+    '#54c59f',
+    '#c7a06f',
+    '#8464c6',
+    '#8464c6',
+    '#54c59f',
+    '#bdbdbd',
+]
+
+cursor_bg = "#8464c6"
+cursor_border = "#8464c6"
+cursor_fg = "#8464c6"
+foreground = "#bdbdbd"
+selection_bg = "#29263c"
+selection_fg = "#bdbdbd"
+scrollbar_thumb = '#6d6d6d'
+
+[colors.indexed]
+
+[metadata]
+aliases = []
+author = "Dalton Menezes (https://daltonmenezes.github.io)"
+name = "Aura Dark Soft"
