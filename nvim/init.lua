@@ -805,15 +805,7 @@ require("lazy").setup({
 			"nvim-treesitter/nvim-treesitter",
 		},
 		config = function()
-			require("go").setup({
-				lsp_cfg = false,
-				lsp_document_formatting = false,
-				lsp_keymaps = false,
-				lsp_codelens = false,
-				lsp_inlay_hints = {
-					enable = false,
-				},
-			})
+			require("go").setup()
 		end,
 		event = { "CmdlineEnter" },
 		ft = { "go", "gomod" },
