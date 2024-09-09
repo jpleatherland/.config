@@ -11,8 +11,10 @@ vim.keymap.set("n", "<leader>l", "<C-w>l")
 vim.keymap.set("n", "<leader>k", "<C-w>k")
 
 -- pane resize
-vim.keymap.set("n", "<leader>u", "<C-w>>")
-vim.keymap.set("n", "<leader>o", "<C-w><")
+vim.keymap.set("n", "<leader>u", "10<C-w>>")
+vim.keymap.set("n", "<leader>o", "10<C-w><")
+vim.keymap.set("n", "<leader>U", "<C-w>>")
+vim.keymap.set("n", "<leader>O", "<C-w><")
 vim.keymap.set("n", "<leader>.", "<C-w>+")
 vim.keymap.set("n", "<leader>m", "<C-w>-")
 
@@ -494,7 +496,8 @@ require("lazy").setup({
 				--    https://github.com/pmizio/typescript-tools.nvim
 				--
 				-- But for many setups, the LSP (`tsserver`) will work just fine
-				-- tsserver = {},
+				tsserver = {},
+				eslint = {},
 				--
 
 				lua_ls = {
