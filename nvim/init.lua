@@ -2,7 +2,8 @@
 vim.g.mapleader = "\\"
 vim.g.maplocalleader = "\\"
 vim.keymap.set({ "i", "v" }, "<leader>jk", "<Esc>")
-vim.keymap.set("n", "<leader>pv", ":Ex<CR>")
+-- commenting this out while trying oil.nvim
+-- vim.keymap.set("n", "<leader>pv", ":Ex<CR>")
 
 -- pane navigation
 vim.keymap.set("n", "<leader>j", "<C-w>j")
