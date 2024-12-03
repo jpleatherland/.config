@@ -12,8 +12,8 @@ vim.keymap.set("n", "<leader>l", "<C-w>l")
 vim.keymap.set("n", "<leader>k", "<C-w>k")
 
 -- pane resize
-vim.keymap.set("n", "<leader>u", "10<C-w>>")
-vim.keymap.set("n", "<leader>o", "10<C-w><")
+vim.keymap.set("n", "<leader>u", "10<C-w><")
+vim.keymap.set("n", "<leader>o", "10<C-w>>")
 vim.keymap.set("n", "<leader>U", "<C-w>>")
 vim.keymap.set("n", "<leader>O", "<C-w><")
 vim.keymap.set("n", "<leader>.", "<C-w>+")
@@ -498,8 +498,9 @@ require("lazy").setup({
 				--
 				-- But for many setups, the LSP (`tsserver`) will work just fine
 				--tsserver = {},
-        ts_ls = {},
+				ts_ls = {},
 				eslint = {},
+				vale = {},
 				--
 
 				lua_ls = {
@@ -577,6 +578,9 @@ require("lazy").setup({
 			formatters_by_ft = {
 				lua = { "stylua" },
 				html = { "html-lsp" },
+				json = { "clang-format" },
+				jsonc = { "clang-format" },
+				markdown = { "vale" },
 				-- Conform can also run multiple formatters sequentially
 				-- python = { "isort", "black" },
 				--
@@ -783,6 +787,7 @@ require("lazy").setup({
 				--  If you are experiencing weird indenting issues, add the language to
 				--  the list of additional_vim_regex_highlighting and disabled languages for indent.
 				additional_vim_regex_highlighting = { "ruby" },
+        disable = {"bash"}
 			},
 			indent = { enable = true, disable = { "ruby" } },
 		},

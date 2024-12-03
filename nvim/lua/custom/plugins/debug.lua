@@ -3,20 +3,33 @@ return {
 		"mfussenegger/nvim-dap",
 		dependencies = {
 			"leoluz/nvim-dap-go",
+			"mxsdev/nvim-dap-vscode-js",
 			"rcarriga/nvim-dap-ui",
 			"theHamsta/nvim-dap-virtual-text",
 			"nvim-neotest/nvim-nio",
 			"williamboman/mason.nvim",
+			{
+				"microsoft/vscode-js-debug",
+				version = "1.x",
+				build = "npm install --legacy-peer-deps && npx gulp vsDebugServerBundle && mv dist out"
+			}
 		},
 		config = function()
 			local dap = require("dap")
 			local ui = require("dapui")
 			local dapgo = require("dap-go")
+			local js_based_languages = { "javascript", "typescript" }
+
 
 			require("dapui").setup()
 			require("dap-go").setup()
 
 			require("nvim-dap-virtual-text").setup({})
+			require("dap-vscode-js").setup({
+				node_path = "/home/leathj/.nvm/versions/node/v18.20.1/bin/node",
+				debugger_path = vim.fn.resolve(vim.fn.stdpath("data") .. "/lazy/vscode-js-debug"),
+				adapters = { 'pwa-node', 'pwa-chrome' }
+			})
 
 			-- Handled by nvim-dap-go
 			-- dap.adapters.go = {
@@ -83,6 +96,32 @@ return {
 			end
 			dap.listeners.before.event_exited.dapui_config = function()
 				ui.close()
+			end
+			for _, language in ipairs(js_based_languages) do
+				require("dap").configurations[language] = {
+					{
+						type = "pwa-node",
+						request = "launch",
+						name = "Launch file",
+						program = "${file}",
+						cwd = "${workspaceFolder}",
+					},
+					{
+						type = "pwa-node",
+						request = "attach",
+						name = "Attach",
+						processId = require("dap.utils").pick_process,
+						cwd = "${workspaceFolder}",
+					},
+					{
+						type = "pwa-chrome",
+						request = "launch",
+						name = 'Start Chrome with "localhost"',
+						url = "http://localhost:3000",
+						webRoot = "${workspaceFolder}",
+						userDataDir = "${workspaceFolder}/.vscode/vscode-chrome-debug-userdatadir",
+					},
+				}
 			end
 		end,
 	},
