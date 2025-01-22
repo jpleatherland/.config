@@ -23,7 +23,6 @@ vim.keymap.set("n", "<leader>m", "<C-w>-")
 vim.keymap.set("n", "<leader>r", "yiw[{V%::s/<C-r>///g<left><left>") --local
 vim.keymap.set("n", "<leader>R", "gD:%s/<C-R><C-W>///g<left><left>") --global
 
--- global
 
 -- set line numbers to hybrid
 vim.opt.number = true
@@ -36,6 +35,7 @@ vim.opt.expandtab = true
 vim.opt.cindent = true
 vim.opt.softtabstop = 4
 vim.opt.tabstop = 4
+vim.opt.backspace = {"start", "eol", "indent"}
 
 -- code folding
 vim.opt.foldmethod = "expr"
