@@ -8,6 +8,43 @@ require 'jack/options'
 require 'jack/autocommands'
 require 'jack/lazy-plugins'
 
+-- pane resize
+vim.keymap.set("n", "<leader>u", "10<C-w><")
+vim.keymap.set("n", "<leader>o", "10<C-w>>")
+vim.keymap.set("n", "<leader>U", "<C-w>>")
+vim.keymap.set("n", "<leader>O", "<C-w><")
+vim.keymap.set("n", "<leader>.", "<C-w>+")
+vim.keymap.set("n", "<leader>m", "<C-w>-")
+
+-- variable rename
+vim.keymap.set("n", "<leader>r", "yiw[{V%::s/<C-r>///g<left><left>") --local
+vim.keymap.set("n", "<leader>R", "gD:%s/<C-R><C-W>///g<left><left>") --global
+
+
+-- set line numbers to hybrid
+vim.opt.number = true
+vim.opt.relativenumber = true
+
+-- default spacing
+vim.opt.shiftwidth = 4
+vim.opt.expandtab = true
+-- vim.opt.smartindent = true
+vim.opt.cindent = true
+vim.opt.softtabstop = 4
+vim.opt.tabstop = 4
+vim.opt.backspace = {"start", "eol", "indent"}
+
+-- code folding
+vim.opt.foldmethod = "expr"
+vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
+vim.opt.foldenable = false
+
+vim.opt.ruler = false
+
+-- Set to true if you have a Nerd Font installed and selected in the terminal
+vim.g.have_nerd_font = true
+
+-- [[ Setting options ]]
 -- See `:help vim.opt`
 -- NOTE: You can change these options as you wish!
 

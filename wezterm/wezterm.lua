@@ -10,7 +10,7 @@ local config = wezterm.config_builder()
 config.color_scheme = "Aura Dark Soft"
 
 -- Font
-config.font = wezterm.font("MesloLGM Nerd Font", { weight = "Light" })
+config.font = wezterm.font("NotoMono Nerd Font Mono", { weight = "Light" })
 
 config.keys = {
 	{
