@@ -2,11 +2,11 @@
 vim.g.mapleader = "\\"
 vim.g.maplocalleader = "\\"
 
-require 'jack/lazy-bootstrap'
-require 'jack/keymaps'
-require 'jack/options'
-require 'jack/autocommands'
-require 'jack/lazy-plugins'
+require("jack/lazy-bootstrap")
+require("jack/keymaps")
+require("jack/options")
+require("jack/autocommands")
+require("jack/lazy-plugins")
 
 -- pane resize
 vim.keymap.set("n", "<leader>u", "10<C-w><")
@@ -20,7 +20,6 @@ vim.keymap.set("n", "<leader>m", "<C-w>-")
 vim.keymap.set("n", "<leader>r", "yiw[{V%::s/<C-r>///g<left><left>") --local
 vim.keymap.set("n", "<leader>R", "gD:%s/<C-R><C-W>///g<left><left>") --global
 
-
 -- set line numbers to hybrid
 vim.opt.number = true
 vim.opt.relativenumber = true
@@ -28,11 +27,12 @@ vim.opt.relativenumber = true
 -- default spacing
 vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
--- vim.opt.smartindent = true
-vim.opt.cindent = true
+vim.opt.autoindent = true
+vim.opt.smartindent = true
+-- vim.opt.cindent = true
 vim.opt.softtabstop = 4
 vim.opt.tabstop = 4
-vim.opt.backspace = {"start", "eol", "indent"}
+vim.opt.backspace = { "start", "eol", "indent" }
 
 -- code folding
 vim.opt.foldmethod = "expr"
@@ -47,7 +47,6 @@ vim.g.have_nerd_font = true
 -- [[ Setting options ]]
 -- See `:help vim.opt`
 -- NOTE: You can change these options as you wish!
-
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which

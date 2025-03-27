@@ -1,3 +1,7 @@
+format = "$time $all"
 add_newline = false
 [package]
 disabled = true
+[time]
+disabled = false
+format = "[$time](bold)"

@@ -26,7 +26,11 @@ return {
 			local function load_launch_json()
 				local file = vim.fn.getcwd() .. "/.vscode/launch.json"
 				if vim.fn.filereadable(file) == 1 then
-					local launch_data = json(table.concat(vim.fn.readfile(file), "\n"))
+					local status, launch_data = pcall(json(table.concat(vim.fn.readfile(file), "\n")))
+					if not status then
+						print("Failed to parse launch.json")
+						return
+					end
 
 					if launch_data and launch_data.configurations then
 						for _, config in ipairs(launch_data.configurations) do
