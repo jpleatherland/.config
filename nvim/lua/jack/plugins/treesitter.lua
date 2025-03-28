@@ -3,7 +3,7 @@ return {
 		"nvim-treesitter/nvim-treesitter",
 		build = ":TSUpdate",
 		opts = {
-			ensure_installed = { "bash", "c", "d", "diff", "go", "html", "lua", "luadoc", "markdown", "vim", "vimdoc" },
+			ensure_installed = { "bash", "c", "d", "diff", "html", "lua", "luadoc", "markdown", "vim", "vimdoc" },
 			-- Autoinstall languages that are not installed
 			auto_install = true,
 			highlight = {
@@ -14,7 +14,7 @@ return {
 				additional_vim_regex_highlighting = { "ruby" },
 				disable = { "bash" },
 			},
-			indent = { enable = true, disable = { "ruby" } },
+			indent = { enable = true, disable = { "ruby", "go" } },
 		},
 		config = function(_, opts)
 			-- [[ Configure Treesitter ]] See `:help nvim-treesitter`
