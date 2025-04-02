@@ -1,251 +1,364 @@
 return {
-	{
-		"mfussenegger/nvim-dap",
-		dependencies = {
-			"rcarriga/nvim-dap-ui",
-			"mfussenegger/nvim-dap-python",
-			"theHamsta/nvim-dap-virtual-text",
-			"nvim-neotest/nvim-nio",
-			"williamboman/mason.nvim",
-			"jay-babu/mason-nvim-dap.nvim",
-			"leoluz/nvim-dap-go",
-			"mxsdev/nvim-dap-vscode-js",
-			{
-				"microsoft/vscode-js-debug",
-				version = "1.x",
-				build = "npm install --legacy-peer-deps && npx gulp vsDebugServerBundle && mv dist out",
-			},
-		},
-		config = function()
-			local dap = require("dap")
-			local ui = require("dapui")
-			local dapgo = require("dap-go")
-			local js_based_languages = { "javascript", "typescript" }
-			local json = require("dap.ext.vscode").json_decode
+	-- NOTE: Yes, you can install new plugins here!
+	"mfussenegger/nvim-dap",
+	-- NOTE: And you can specify dependencies as well
+	dependencies = {
+		-- Creates a beautiful debugger UI
+		"rcarriga/nvim-dap-ui",
 
-			local function load_launch_json()
-				local file = vim.fn.getcwd() .. "/.vscode/launch.json"
-				if vim.fn.filereadable(file) == 1 then
-					local status, launch_data = pcall(json(table.concat(vim.fn.readfile(file), "\n")))
-					if not status then
-						print("Failed to parse launch.json")
-						return
-					end
+		-- Required dependency for nvim-dap-ui
+		"nvim-neotest/nvim-nio",
 
-					if launch_data and launch_data.configurations then
-						for _, config in ipairs(launch_data.configurations) do
-							if config.type and dap.adapters[config.type] then
-								dap.configurations[config.type] = dap.configurations[config.type] or {}
-								table.insert(dap.configurations[config.type], config)
-							end
-						end
-					end
+		-- Installs the debug adapters for you
+		"microsoft/vscode-js-debug",
+		"williamboman/mason.nvim",
+		"jay-babu/mason-nvim-dap.nvim",
 
-					if launch_data and launch_data.compounds then
-						for _, compound in ipairs(launch_data.compounds) do
-							dap.configurations[compound.name] = {
-								type = "compound",
-								name = compound.name,
-								configurations = compound.configurations,
-							}
-						end
-					end
-				else
-					print("No launch.json found in .vscode directory")
-				end
-			end
-
-			---@diagnostic disable: undefined-field
-			local function run_compound(name)
-				local compound = dap.configurations[name]
-				if not compound or compound.type ~= "compound" then
-					print("No compound named " .. name)
-					return
-				end
-
-				for _, config_name in ipairs(compound.configurations) do
-					local config = nil
-					for _, v in pairs(dap.configurations) do
-						for _, c in ipairs(v) do
-							if c.name == config_name then
-								config = c
-								break
-							end
-						end
-					end
-
-					if config then
-						print("Starting " .. config_name)
-						dap.run(config)
-					else
-						print("Configuration not found: " .. config_name)
-					end
-				end
-			end
-
-			require("dapui").setup()
-			require("dap-go").setup()
-			require("dap-python").setup("~/.local/share/nvim/mason/packages/debugpy/venv/bin/python")
-
-			require("nvim-dap-virtual-text").setup({})
-			require("dap-vscode-js").setup({
-				node_path = "/home/leathj/.nvm/versions/node/v18.20.1/bin/node",
-				debugger_path = vim.fn.resolve(vim.fn.stdpath("data") .. "/lazy/vscode-js-debug"),
-				adapters = { "pwa-node", "pwa-chrome" },
-			})
-
-			load_launch_json()
-
-			-- Handled by nvim-dap-go
-			-- dap.adapters.go = {
-			--   type = "server",
-			--   port = "${port}",
-			--   executable = {
-			--     command = "dlv",
-			--     args = { "dap", "-l", "127.0.0.1:${port}" },
-			--   },
-			-- }
-
-			vim.keymap.set("n", "<space>db", dap.toggle_breakpoint)
-			vim.keymap.set("n", "<space>dtc", dap.run_to_cursor)
-			vim.keymap.set("n", "<leader>dc", function()
-				if not dap.configurations then
-					print("No DAP configurations found!")
-					return
-				end
-
-				-- Collect available compound names
-				local compounds = {}
-				for name, config in pairs(dap.configurations) do
-					if type(config) == "table" and config.type == "compound" then
-						table.insert(compounds, name)
-					end
-				end
-
-				-- If no compounds exist, exit
-				if #compounds == 0 then
-					print("No launch compounds found in launch.json")
-					return
-				end
-
-				-- Let user pick a compound
-				vim.ui.select(compounds, { prompt = "Select a compound to debug:" }, function(choice)
-					if choice then
-						run_compound(choice)
-					end
-				end)
-			end)
-			vim.keymap.set("n", "<leader>dn", function()
-				local bufs = vim.api.nvim_list_bufs()
-				local dap_repls = {}
-
-				-- Find all buffers with "DAP REPL" in their name or empty ones (sometimes DAP REPL has no name)
-				for _, buf in ipairs(bufs) do
-					local buf_name = vim.api.nvim_buf_get_name(buf)
-					local buf_type = vim.api.nvim_buf_get_option(buf, "buftype")
-
-					-- Check if it's a DAP REPL (matches name OR is an unnamed terminal-like buffer)
-					if buf_name:match("DAP") or buf_type == "terminal" then
-						table.insert(dap_repls, buf)
-					end
-				end
-
-				-- Cycle through found REPL buffers
-				if #dap_repls > 1 then
-					local current = vim.api.nvim_get_current_buf()
-					for i, buf in ipairs(dap_repls) do
-						if buf == current then
-							local next_buf = dap_repls[(i % #dap_repls) + 1]
-							vim.api.nvim_set_current_buf(next_buf)
-							return
-						end
-					end
-				elseif #dap_repls == 1 then
-					print("Only one DAP REPL buffer found")
-				else
-					print("No DAP REPL buffers found")
-				end
-			end)
-
-			-- Eval var under cursor
-			vim.keymap.set("n", "<space>?", function()
-				require("dapui").eval(nil, { enter = true })
-			end)
-
-			vim.keymap.set("n", "<F3>", dap.continue)
-			vim.keymap.set("n", "<F6>", dap.step_into)
-			vim.keymap.set("n", "<F7>", dap.step_over)
-			vim.keymap.set("n", "<F2>", dap.step_out)
-			vim.keymap.set("n", "<F5>", dap.step_back)
-			vim.keymap.set("n", "<F4>", dap.restart)
-			vim.api.nvim_set_hl(0, "DapBreakpoint", { ctermbg = 0, fg = "#993939", bg = "#31353f" })
-			vim.api.nvim_set_hl(0, "DapLogPoint", { ctermbg = 0, fg = "#61afef", bg = "#31353f" })
-			vim.api.nvim_set_hl(0, "DapStopped", { ctermbg = 0, fg = "#98c379", bg = "#31353f" })
-
-			vim.fn.sign_define(
-				"DapBreakpoint",
-				{ text = "", texthl = "DapBreakpoint", linehl = "DapBreakpoint", numhl = "DapBreakpoint" }
-			)
-			vim.fn.sign_define(
-				"DapBreakpointCondition",
-				{ text = "", texthl = "DapBreakpoint", linehl = "DapBreakpoint", numhl = "DapBreakpoint" }
-			)
-			vim.fn.sign_define(
-				"DapBreakpointRejected",
-				{ text = "", texthl = "DapBreakpoint", linehl = "DapBreakpoint", numhl = "DapBreakpoint" }
-			)
-			vim.fn.sign_define(
-				"DapLogPoint",
-				{ text = "", texthl = "DapLogPoint", linehl = "DapLogPoint", numhl = "DapLogPoint" }
-			)
-			vim.fn.sign_define(
-				"DapStopped",
-				{ text = "", texthl = "DapStopped", linehl = "DapStopped", numhl = "DapStopped" }
-			)
-			vim.keymap.set("n", "<F8>", ui.toggle)
-
-			vim.keymap.set("n", "<leader>dgt", function()
-				dapgo.debug_test()
-			end)
-
-			dap.listeners.before.attach.dapui_config = function()
-				ui.open()
-			end
-			dap.listeners.before.launch.dapui_config = function()
-				ui.open()
-			end
-			dap.listeners.before.event_terminated.dapui_config = function()
-				ui.close()
-			end
-			dap.listeners.before.event_exited.dapui_config = function()
-				ui.close()
-			end
-			for _, language in ipairs(js_based_languages) do
-				require("dap").configurations[language] = {
-					{
-						type = "pwa-node",
-						request = "launch",
-						name = "Launch file",
-						program = "${file}",
-						cwd = "${workspaceFolder}",
-					},
-					{
-						type = "pwa-node",
-						request = "attach",
-						name = "Attach",
-						processId = require("dap.utils").pick_process,
-						cwd = "${workspaceFolder}",
-					},
-					{
-						type = "pwa-chrome",
-						request = "launch",
-						name = 'Start Chrome with "localhost"',
-						url = "http://localhost:3000",
-						webRoot = "${workspaceFolder}",
-						userDataDir = "${workspaceFolder}/.vscode/vscode-chrome-debug-userdatadir",
-					},
-				}
-			end
-		end,
+		-- Add your own debuggers here
+		"leoluz/nvim-dap-go",
+		"mxsdev/nvim-dap-vscode-js",
+		"mfussenegger/nvim-dap-python",
+		"rcarriga/cmp-dap", -- Optional: Autocomplete support in dap REPL
 	},
+	lazy = false,
+	keys = {
+		-- Basic debugging keymaps, feel free to change to your liking!
+		{
+			"<F5>",
+			function()
+				require("dap").continue()
+			end,
+			desc = "Debug: Start/Continue",
+		},
+		{
+			"<F6>",
+			function()
+				require("dap").step_into()
+			end,
+			desc = "Debug: Step Into",
+		},
+		{
+			"<F3>",
+			function()
+				require("dap").step_over()
+			end,
+			desc = "Debug: Step Over",
+		},
+		{
+			"<F1>",
+			function()
+				require("dap").step_out()
+			end,
+			desc = "Debug: Step Out",
+		},
+		{
+			"<leader>db",
+			function()
+				require("dap").toggle_breakpoint()
+			end,
+			desc = "Debug: Toggle Breakpoint",
+		},
+		{
+			"<leader>dB",
+			function()
+				require("dap").set_breakpoint(vim.fn.input("Breakpoint condition: "))
+			end,
+			desc = "Debug: Set Breakpoint",
+		},
+		-- Toggle to see last session result. Without this, you can't see session output in case of unhandled exception.
+		{
+			"<F7>",
+			function()
+				require("dapui").toggle()
+			end,
+			desc = "Debug: See last session result.",
+		},
+	},
+	config = function()
+		local dap = require("dap")
+		local dapui = require("dapui")
+
+		dap.adapters.node = dap.adapters["pwa-node"]
+
+		require("mason-nvim-dap").setup({
+			-- Makes a best effort to setup the various debuggers with
+			-- reasonable debug configurations
+			automatic_installation = true,
+
+			-- You can provide additional configuration to the handlers,
+			-- see mason-nvim-dap README for more information
+			handlers = {},
+
+			ensure_installed = {
+				-- Update this to ensure that you have the debuggers for the langs you want
+				"delve", -- Go
+				"js-debug-adapter", -- Javascript / Typescript / Node
+				"debugpy", -- Python
+			},
+		})
+
+		-- Dap UI setup
+		-- For more information, see |:help nvim-dap-ui|
+		dapui.setup({
+			icons = { expanded = "▾", collapsed = "▸", current_frame = "*" },
+			controls = {
+				icons = {
+					pause = "⏸",
+					play = "▶",
+					step_into = "⏎",
+					step_over = "⏭",
+					step_out = "⏮",
+					step_back = "b",
+					run_last = "▶▶",
+					terminate = "⏹",
+					disconnect = "⏏",
+				},
+			},
+		})
+
+		-- Change breakpoint icons
+		vim.api.nvim_set_hl(0, "DapBreak", { fg = "#e51400" })
+		vim.api.nvim_set_hl(0, "DapStop", { fg = "#ffcc00" })
+		local breakpoint_icons = vim.g.have_nerd_font
+				and {
+					Breakpoint = "",
+					BreakpointCondition = "",
+					BreakpointRejected = "",
+					LogPoint = "",
+					Stopped = "",
+				}
+			or {
+				Breakpoint = "●",
+				BreakpointCondition = "⊜",
+				BreakpointRejected = "⊘",
+				LogPoint = "◆",
+				Stopped = "⭔",
+			}
+		for type, icon in pairs(breakpoint_icons) do
+			local tp = "Dap" .. type
+			local hl = (type == "Stopped") and "DapStop" or "DapBreak"
+			vim.fn.sign_define(tp, { text = icon, texthl = hl, numhl = hl })
+		end
+
+		dap.listeners.after.event_initialized["dapui_config"] = dapui.open
+		dap.listeners.before.event_terminated["dapui_config"] = dapui.close
+		dap.listeners.before.event_exited["dapui_config"] = dapui.close
+
+		-- Install golang specific config
+		require("dap-go").setup({
+			delve = {
+				-- On Windows delve must be run attached or it crashes.
+				-- See https://github.com/leoluz/nvim-dap-go/blob/main/README.md#configuring
+				detached = vim.fn.has("win32") == 0,
+			},
+		})
+
+		require("dap-vscode-js").setup({
+			debugger_path = vim.fn.stdpath("data") .. "/mason/packages/js-debug-adapter",
+			adapters = { "pwa-node", "pwa-chrome", "pwa-msedge", "node-terminal", "node" },
+		})
+
+		for _, language in ipairs({ "typescript", "javascript" }) do
+			require("dap").configurations[language] = {
+				{
+					type = "pwa-node",
+					request = "launch",
+					name = "Launch file",
+					program = "${file}",
+					cwd = vim.fn.getcwd(),
+				},
+				{
+					type = "pwa-node",
+					request = "attach",
+					name = "Attach to process",
+					processId = require("dap.utils").pick_process,
+					cwd = vim.fn.getcwd(),
+				},
+			}
+		end
+
+		require("dap-python").setup(vim.fn.stdpath("data") .. "/mason/packages/debugpy/venv/bin/python")
+
+		table.insert(require("dap").configurations.python, {
+			type = "python",
+			request = "launch",
+			name = "Launch file",
+			program = "${file}",
+			pythonPath = function()
+				return "python"
+			end,
+		})
+
+		local function start_compound(compound_name)
+			local launch_json = vim.fn.getcwd() .. "/.vscode/launch.json"
+
+			-- Check if the file exists
+			if vim.fn.filereadable(launch_json) == 0 then
+				vim.notify("Error: No .vscode/launch.json found!", vim.log.levels.ERROR)
+				return
+			end
+
+			-- Attempt to read and parse JSON
+			local ok, json = pcall(vim.fn.json_decode, vim.fn.readfile(launch_json))
+			if not ok or not json then
+				vim.notify("Error: Failed to parse launch.json!", vim.log.levels.ERROR)
+				return
+			end
+
+			-- Ensure compounds exist
+			if not json.compounds then
+				vim.notify("Error: No 'compounds' found in launch.json!", vim.log.levels.ERROR)
+				return
+			end
+
+			-- Find and start the selected compound
+			for _, compound in ipairs(json.compounds) do
+				if compound.name == compound_name then
+					for _, config_name in ipairs(compound.configurations) do
+						for _, config in ipairs(json.configurations or {}) do
+							if config.name == config_name then
+								if config.type == "node" then
+									config.type = "pwa-node"
+								end
+								dap.run(config)
+							end
+						end
+					end
+					return
+				end
+			end
+
+			-- If compound is not found
+			vim.notify("Error: Compound '" .. compound_name .. "' not found!", vim.log.levels.ERROR)
+		end
+
+		_G.StopAllSessions = function()
+			for _, session in pairs(dap.sessions()) do
+				dap.terminate({ session = session })
+			end
+
+			vim.defer_fn(function()
+				if vim.tbl_isempty(dap.sessions()) then
+					dapui.close()
+				end
+			end, 100)
+		end
+
+		_G.SelectCompound = function()
+			local launch_json = vim.fn.getcwd() .. "/.vscode/launch.json"
+
+			-- Check if the file exists
+			if vim.fn.filereadable(launch_json) == 0 then
+				vim.notify("Error: No .vscode/launch.json found!", vim.log.levels.ERROR)
+				return
+			end
+
+			-- Attempt to parse JSON
+			local ok, json = pcall(vim.fn.json_decode, vim.fn.readfile(launch_json))
+			if not ok or not json then
+				vim.notify("Error: Failed to parse launch.json!", vim.log.levels.ERROR)
+				return
+			end
+
+			-- Extract available compounds
+			local compounds = {}
+			if json.compounds then
+				for _, compound in ipairs(json.compounds) do
+					table.insert(compounds, compound.name)
+				end
+			end
+
+			-- If no compounds are found
+			if #compounds == 0 then
+				vim.notify("Error: No debug compounds found in launch.json!", vim.log.levels.ERROR)
+				return
+			end
+
+			-- Show a selection menu
+			vim.ui.select(compounds, { prompt = "Select Debug Compound" }, function(choice)
+				if choice then
+					start_compound(choice)
+				end
+			end)
+		end
+		local current_session_index = 1
+
+		_G.SwitchSession = function()
+			local sessions = dap.sessions()
+			if #sessions == 0 then
+				print("No active debug sessions.")
+				return
+			end
+
+			-- Switch to the next session
+			current_session_index = current_session_index % #sessions + 1
+			local current_session = sessions[current_session_index]
+
+			-- Close dap-ui if it's already open
+			dapui.close()
+
+			-- Set the active session for dap-ui and open it
+			dapui.open()
+
+			dapui.toggle()
+
+			-- Focus on the REPL for the current session
+			dapui.eval("console.log('Switched to new session: " .. current_session.config.name .. "')")
+		end
+
+		-- Function to display active sessions in a select menu
+		_G.ViewSessions = function()
+			local sessions = dap.sessions()
+
+			if #sessions == 0 then
+				print("No active debug sessions.")
+				return
+			end
+
+			-- Create a table with session names
+			local session_names = {}
+			for _, session in ipairs(sessions) do
+				table.insert(session_names, session.config.name or "Unnamed Session")
+			end
+
+			-- Use vim.ui.select to show the list of active sessions
+			vim.ui.select(session_names, {
+				prompt = "Select a Debug Session:",
+				format_item = function(item)
+					return item
+				end,
+			}, function(choice)
+				if choice then
+					-- Find the selected session based on the name
+					for _, session in ipairs(sessions) do
+						if session.config.name == choice then
+							print("Switching to session: " .. choice)
+
+							-- Close dap-ui and reopen for the new session
+							dapui.close()
+							dapui.open()
+
+							-- Set the active session
+							dap.set_session(session)
+
+							-- Focus the REPL of the selected session
+							dap.repl.open()
+
+							-- Optionally, show an optional message in the REPL (to indicate session switch)
+							dapui.eval("console.log('Switched to session: " .. choice .. "')")
+
+							-- This step ensures that dap.repl correctly displays the REPL for the new session
+							dap.repl.eval('console.log("REPL switched to session: ' .. choice .. '")')
+						end
+					end
+				end
+			end)
+		end
+
+		-- Keybinding to open the session selector
+		vim.api.nvim_set_keymap("n", "<leader>dv", ":lua ViewSessions()<CR>", { noremap = true, silent = true })
+		vim.api.nvim_set_keymap("n", "<leader>dc", ":lua SelectCompound()<CR>", { noremap = true, silent = true })
+		vim.api.nvim_set_keymap("n", "<leader>ds", ":lua SwitchSession()<CR>", { noremap = true, silent = true })
+		vim.api.nvim_set_keymap("n", "<leader>dq", ":lua StopAllSessions()<CR>", { noremap = true, silent = true })
+	end,
 }
