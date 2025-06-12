@@ -167,7 +167,6 @@ return {
 				--tsserver = {},
 				ts_ls = {},
 				eslint = {},
-				vale = {},
 				serve_d = {},
 				--
 

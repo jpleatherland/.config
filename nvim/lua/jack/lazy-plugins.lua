@@ -1,3 +1,8 @@
+-- copilot, not a lua plugin
+vim.g.copilot_no_tab_map = true
+vim.g.copilot_assume_mapped = true
+vim.api.nvim_set_keymap("i", "<C-J>", 'copilot#Accept("<CR>")', { expr = true, silent = true })
+
 -- [[ Configure and install plugins ]]
 --
 --  To check the current status of your plugins, run
@@ -8,6 +13,7 @@
 --  To update plugins you can run
 --    :Lazy update
 --
+
 -- NOTE: Here is where you install your plugins.
 require("lazy").setup({
 	--Plugins can be added with a link (or for a github repo: 'owner/repo' link).
@@ -22,8 +28,8 @@ require("lazy").setup({
 
 	-- modular approach: using `require 'path/name'` will
 	-- include a plugin definition from file lua/path/name.lua
-  
-  -- Adds git related signs to the gutter, as well as utilities for managing changes
+
+	-- Adds git related signs to the gutter, as well as utilities for managing changes
 	require("jack/plugins/gitsigns"),
 
 	-- search and much more
@@ -48,30 +54,32 @@ require("lazy").setup({
 	require("jack/plugins/mini"),
 
 	-- "gc" to comment visual regions/lines
-	-- "gcc" to toggle comment line 
+	-- "gcc" to toggle comment line
 	require("jack/plugins/visualcomment"),
 
-	-- tresitter
+	-- treesitter
 	require("jack/plugins/treesitter"),
 
-  -- directory & file navigation
+	-- directory & file navigation
 	require("jack/plugins/oil"),
 
-  -- debugging
+	-- debugging
 	require("jack/plugins/debug"),
 
-  -- flutter
+	-- flutter
 	require("jack/plugins/flutter"),
 
-  -- indent_line
+	-- indent_line
 	require("jack/plugins/indent_line"),
 
-  -- go multipack 
+	-- go multipack
 	require("jack/plugins/go"),
 
-  -- smooth cursor
-	-- require("jack/plugins/smear_cursor"),
+	-- copilot chat
+	require("jack/plugins/copilot_chat"),
 
+	-- smooth cursor
+	-- require("jack/plugins/smear_cursor"),
 }, {
 	ui = {
 		icons = vim.g.have_nerd_font and {} or {

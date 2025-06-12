@@ -29,7 +29,6 @@ return {
 				html = { "html-lsp" },
 				json = { "clang-format" },
 				jsonc = { "clang-format" },
-				markdown = { "vale" },
 				-- Conform can also run multiple formatters sequentially
 				-- python = { "isort", "black" },
 				--
