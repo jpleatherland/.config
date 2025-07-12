@@ -45,7 +45,7 @@ create_shim "npx" "bunx"
 echo "✅ Bun is now your system-wide node/npm/npx"
 
 echo "🐹 Installing Go (latest stable)..."
-GO_LATEST=$(curl -s https://go.dev/VERSION?m=text)
+GO_LATEST=$(curl -s https://go.dev/VERSION?m=text | head -n1)
 echo "Latest Go version is $GO_LATEST"
 wget "https://dl.google.com/go/${GO_LATEST}.linux-amd64.tar.gz"
 sudo rm -rf /usr/local/go
