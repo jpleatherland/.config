@@ -27,6 +27,7 @@ git pull origin main
 # Run the install script
 if [ -x "./setup/install.sh" ]; then
   echo "🚀 Running setup/install.sh..."
+  chmod +x setup/install.sh
   ./setup/install.sh
 else
   echo "⚠️  ./setup/install.sh not found or not executable!"
