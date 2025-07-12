@@ -25,11 +25,11 @@ echo "⬇️  Pulling latest changes from origin/main..."
 git pull origin main
 
 # Run the install script
-if [ -x "./startup/install.sh" ]; then
-  echo "🚀 Running startup/install.sh..."
-  ./startup/install.sh
+if [ -x "./setup/install.sh" ]; then
+  echo "🚀 Running setup/install.sh..."
+  ./setup/install.sh
 else
-  echo "⚠️  ./startup/install.sh not found or not executable!"
+  echo "⚠️  ./setup/install.sh not found or not executable!"
   exit 1
 fi
 
