@@ -6,3 +6,5 @@
 !lsd
 !sway
 !i3status-rust
+!setup
+!install.sh
