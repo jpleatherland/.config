@@ -24,10 +24,10 @@ git branch --set-upstream-to=origin/main
 echo "⬇️  Pulling latest changes from origin/main..."
 git pull origin main
 
+chmod +x ./setup/install.sh
 # Run the install script
 if [ -x "./setup/install.sh" ]; then
   echo "🚀 Running setup/install.sh..."
-  chmod +x setup/install.sh
   ./setup/install.sh
 else
   echo "⚠️  ./setup/install.sh not found or not executable!"
