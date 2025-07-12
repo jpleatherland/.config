@@ -71,9 +71,8 @@ FLUTTER_URL="https://storage.googleapis.com/flutter_infra_release/releases/$FLUT
 # Download and extract
 echo "⬇️  Downloading Flutter from $FLUTTER_URL..."
 curl -LO "$FLUTTER_URL"
-unzip -q flutter_linux_*.zip
-sudo mv flutter /opt/flutter
-rm flutter_linux_*.zip
+sudo tar -C /opt -xf flutter_linux_*.*
+rm flutter_linux_*.*
 
 # Add to PATH
 FLUTTER_PATH='export PATH="$PATH:/opt/flutter/bin"'
