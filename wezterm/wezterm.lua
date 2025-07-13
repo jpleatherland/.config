@@ -80,5 +80,7 @@ config.keys = {
 	},
 }
 
+config.window_decorations = "RESIZE"
+
 -- and finally, return the configuration to wezterm
 return config
