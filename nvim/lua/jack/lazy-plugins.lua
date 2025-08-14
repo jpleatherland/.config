@@ -57,6 +57,10 @@ require("lazy").setup({
 	-- "gcc" to toggle comment line
 	require("jack/plugins/visualcomment"),
 
+	-- markview
+	-- :Markview Toggle
+	require("jack/plugins/markview"),
+
 	-- treesitter
 	require("jack/plugins/treesitter"),
 
@@ -77,6 +81,7 @@ require("lazy").setup({
 
 	-- copilot chat
 	require("jack/plugins/copilot_chat"),
+
 
 	-- smooth cursor
 	-- require("jack/plugins/smear_cursor"),
